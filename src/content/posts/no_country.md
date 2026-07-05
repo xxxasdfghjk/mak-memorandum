@@ -4,7 +4,7 @@ title: ノーカントリー考察（対話ログ）
 type: film-analysis
 date: 2026-07-05
 tags: [NoCountryForOldMen, 映画考察, 哲学, ウィトゲンシュタイン, アメリカ映画]
-chat: https://chatgpt.com/c/6a339057-ed5c-83e8-a188-8146b39e6c26
+chat: https://chatgpt.com/share/6a4a02b4-1080-83ee-84c2-876cc9c9f96c
 -----
 
 # 一言
