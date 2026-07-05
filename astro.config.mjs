@@ -2,7 +2,7 @@
 import { defineConfig } from 'astro/config';
 
 export default defineConfig({
-  site: 'https://YOUR_GITHUB_USERNAME.github.io',
+  site: 'https://xxxasdfghjk999.github.io',
   base: '/mak-memorandum/',
   trailingSlash: 'always',
 });
