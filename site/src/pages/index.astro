@@ -4,8 +4,8 @@ import Layout from '../layouts/Layout.astro';
 
 const posts = (await getCollection('posts'))
   .sort((a, b) => {
-    const aDate = a.data.pubDate ? new Date(a.data.pubDate).getTime() : 0;
-    const bDate = b.data.pubDate ? new Date(b.data.pubDate).getTime() : 0;
+    const aDate = a.data.date ? new Date(a.data.date).getTime() : 0;
+    const bDate = b.data.date ? new Date(b.data.date).getTime() : 0;
     return bDate - aDate;
   });
 ---
@@ -24,7 +24,7 @@ const posts = (await getCollection('posts'))
       {posts.map((post) => (
         <article class="card">
           <p class="meta">
-            {post.data.type ?? 'review'} • {post.data.pubDate ? new Date(post.data.pubDate).toLocaleDateString('ja-JP', { year: 'numeric', month: 'short', day: 'numeric' }) : '未設定'}
+            {post.data.type ?? 'review'} • {post.data.date ? new Date(post.data.date).toLocaleDateString('ja-JP', { year: 'numeric', month: 'short', day: 'numeric' }) : '未設定'}
           </p>
           <h2>
             <a href={`/posts/${post.id.replace(/\.md$/, '')}`}>{post.data.title}</a>

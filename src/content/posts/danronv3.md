@@ -1,7 +1,7 @@
 ---
 title: "ダンガンロンパV3 感想・考察"
 type: review
-pubDate: 2026-07-05
+date: 2026-07-05
 description: "ダンガンロンパV3のテーマと構造について、プレイ後の考察をまとめた記事。"
 chat: https://chatgpt.com/share/6a49f197-ddcc-83ee-8381-35c0ae0c02f2
 tags:

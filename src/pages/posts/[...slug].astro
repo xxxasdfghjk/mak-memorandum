@@ -62,7 +62,7 @@ const toc = Array.from(post.body.matchAll(/^(#{1,6})\s+(.+)$/gm))
 
       <article class="post">
         <p class="meta">
-          {post.data.type ?? 'review'} • {post.data.pubDate ? new Date(post.data.pubDate).toLocaleDateString('ja-JP', { year: 'numeric', month: 'short', day: 'numeric' }) : '未設定'}
+          {post.data.type ?? 'review'} • {post.data.date ? new Date(post.data.date).toLocaleDateString('ja-JP', { year: 'numeric', month: 'short', day: 'numeric' }) : '未設定'}
         </p>
         <h1>{post.data.title}</h1>
         {post.data.description && <p class="description">{post.data.description}</p>}
