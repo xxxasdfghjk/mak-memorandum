@@ -2,7 +2,7 @@
 
 title: ジェイコブス・ラダー（1990）視聴メモ
 type: movie-note
-date: 2026-07-05
+date: 2026-06-05
 chat: https://chatgpt.com/share/6a4a0415-eb2c-83ee-add6-cb5c46aeb24d
 tags:
 
