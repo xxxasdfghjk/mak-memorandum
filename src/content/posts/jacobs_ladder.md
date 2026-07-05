@@ -3,15 +3,15 @@
 title: ジェイコブス・ラダー（1990）視聴メモ
 type: movie-note
 date: 2026-06-05
-chat: https://chatgpt.com/share/6a4a0415-eb2c-83ee-add6-cb5c46aeb24d
-tags:
 
-* ジェイコブス・ラダー
-* 映画考察
-* 心理ホラー
-* ベトナム戦争
-* 解釈
-  chat:
+tags:
+  - ジェイコブス・ラダー
+  - 映画考察
+  - 心理ホラー
+  - ベトナム戦争
+  - 解釈
+
+chat: https://chatgpt.com/share/6a4a0415-eb2c-83ee-add6-cb5c46aeb24d
 
 ---
 
