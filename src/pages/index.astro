@@ -9,34 +9,109 @@ const posts = (await getCollection('posts'))
     const bDate = b.data.pubDate ? new Date(b.data.pubDate).getTime() : 0;
     return bDate - aDate;
   });
+
+const stripMarkdown = (value: string, maxLength = 140) =>
+  value
+    .replace(/!\[([^\]]*)\]\([^)]*\)/g, '$1')
+    .replace(/\[([^\]]+)\]\([^)]*\)/g, '$1')
+    .replace(/[#>*_`~\-]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .slice(0, maxLength);
+
+const latestPost = posts[0];
+const latestHref = latestPost
+  ? `${baseUrl}posts/${latestPost.id.replace(/\.md$/, '')}/`
+  : baseUrl;
+
+const postSearchData = posts.map((post) => ({
+  id: post.id,
+  title: post.data.title,
+  tags: post.data.tags ?? [],
+  body: stripMarkdown(post.body),
+  date: post.data.pubDate ? new Date(post.data.pubDate).toLocaleDateString('ja-JP', { year: 'numeric', month: 'short', day: 'numeric' }) : '未設定',
+  type: post.data.type ?? 'review',
+  href: `${baseUrl}posts/${post.id.replace(/\.md$/, '')}/`,
+}));
 ---
 
-<Layout title="感想・考察の記録" description="漫画・ゲーム・映画の感想をMarkdownで残すサイトです。">
+<Layout title="感想・考察の記録" description="漫画・ゲーム・映画の感想のAI壁打ち記録を残すサイトです。">
   <main class="page">
     <section class="hero">
-      <p class="eyebrow">Markdown × Astro</p>
-      <h1>感想・考察を静かに残すためのページ</h1>
+      <h1>感想・考察の記録</h1>
       <p>
-        漫画、ゲーム、映画の感想をMarkdownで書き、GitHub Pagesで公開できるようにしたサイトです。
+        漫画・ゲーム・映画の感想のAI壁打ち記録を残すサイトです。
       </p>
-      <a class="primary" href={`${baseUrl}posts/danronv3/`}>最新記事を見る</a>
+      <a class="primary" href={latestHref}>最新記事を見る</a>
     </section>
 
-    <section class="posts">
-      {posts.map((post) => (
+    <section class="search-panel" aria-label="記事検索">
+      <label class="search-label" for="post-search">全文検索</label>
+      <input id="post-search" class="search-input" type="search" placeholder="タイトル・本文・タグで検索" />
+      <p id="search-status" class="search-status">{postSearchData.length}件の投稿を表示</p>
+    </section>
+
+    <section id="posts-list" class="posts">
+      {postSearchData.map((post) => (
         <article class="card">
           <p class="meta">
-            {post.data.type ?? 'review'} • {post.data.pubDate ? new Date(post.data.pubDate).toLocaleDateString('ja-JP', { year: 'numeric', month: 'short', day: 'numeric' }) : '未設定'}
+            {post.type} • {post.date}
           </p>
           <h2>
-            <a href={`${baseUrl}posts/${post.id.replace(/\.md$/, '')}/`}>{post.data.title}</a>
+            <a href={post.href}>{post.title}</a>
           </h2>
-          <p>{post.body.slice(0, 140)}…</p>
+          <p>{post.body}…</p>
           <div class="tags">
-            {post.data.tags?.map((tag) => <span>{tag}</span>)}
+            {post.tags.map((tag: string) => <span>{tag}</span>)}
           </div>
         </article>
       ))}
     </section>
   </main>
+
+  <script type="module" define:vars={{ postSearchData, baseUrl }}>
+    const searchInput = document.getElementById('post-search');
+    const postsList = document.getElementById('posts-list');
+    const status = document.getElementById('search-status');
+
+    const escapeHtml = (value) => value
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+
+    const renderPosts = (query = '') => {
+      const normalized = query.trim().toLowerCase();
+      const filtered = !normalized
+        ? postSearchData
+        : postSearchData.filter((post) => {
+            const haystack = `${post.title} ${post.tags.join(' ')} ${post.body}`.toLowerCase();
+            return haystack.includes(normalized);
+          });
+
+      if (!postsList || !status) return;
+
+      status.textContent = `${filtered.length}件の投稿を表示`;
+
+      if (!filtered.length) {
+        postsList.innerHTML = '<p class="empty-state">一致する投稿はありません。</p>';
+        return;
+      }
+
+      postsList.innerHTML = filtered.map((post) => `
+        <article class="card">
+          <p class="meta">${escapeHtml(post.type)} • ${escapeHtml(post.date)}</p>
+          <h2><a href="${baseUrl}${post.href.replace(baseUrl, '')}">${escapeHtml(post.title)}</a></h2>
+          <p>${escapeHtml(post.body)}…</p>
+          <div class="tags">${post.tags.map((tag) => `<span>${escapeHtml(tag)}</span>`).join('')}</div>
+        </article>
+      `).join('');
+    };
+
+    searchInput?.addEventListener('input', (event) => {
+      renderPosts(event.target.value);
+    });
+
+    renderPosts();
+  </script>
 </Layout>

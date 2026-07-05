@@ -17,12 +17,19 @@ const baseUrl = import.meta.env.BASE_URL;
     <meta name="generator" content={Astro.generator} />
     <meta name="description" content={description} />
     <title>{title}</title>
+    <script is:inline>
+      const storedTheme = localStorage.getItem('theme');
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      const theme = storedTheme || (prefersDark ? 'dark' : 'light');
+      document.documentElement.dataset.theme = theme;
+    </script>
   </head>
   <body>
     <header class="site-header">
       <a class="brand" href={baseUrl}>mak-memorandum</a>
       <nav>
         <a href={baseUrl}>ホーム</a>
+        <button id="theme-toggle" class="theme-toggle" type="button" aria-label="テーマを切り替える">🌙</button>
       </nav>
     </header>
 
@@ -31,5 +38,25 @@ const baseUrl = import.meta.env.BASE_URL;
     <footer class="site-footer">
       <p>© 2026 mak-memorandum</p>
     </footer>
+
+    <script>
+      const toggle = document.getElementById('theme-toggle');
+      const applyTheme = (theme) => {
+        document.documentElement.dataset.theme = theme;
+        localStorage.setItem('theme', theme);
+        if (toggle) {
+          toggle.textContent = theme === 'dark' ? '☀️' : '🌙';
+          toggle.setAttribute('aria-pressed', String(theme === 'dark'));
+        }
+      };
+
+      const initialTheme = document.documentElement.dataset.theme === 'dark' ? 'dark' : 'light';
+      applyTheme(initialTheme);
+
+      toggle?.addEventListener('click', () => {
+        const nextTheme = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+        applyTheme(nextTheme);
+      });
+    </script>
   </body>
 </html>

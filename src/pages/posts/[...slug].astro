@@ -14,31 +14,97 @@ export async function getStaticPaths() {
 const { post } = Astro.props;
 const { Content } = await render(post);
 const baseUrl = import.meta.env.BASE_URL;
+
+const slugify = (value: string, seen = new Set<string>()) => {
+  const normalized = value
+    .toLowerCase()
+    .normalize('NFKD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^\w\s-]/g, '')
+    .trim()
+    .replace(/\s+/g, '-');
+
+  let slug = normalized || 'section';
+  let suffix = 2;
+  while (seen.has(slug)) {
+    slug = `${normalized}-${suffix}`;
+    suffix += 1;
+  }
+  seen.add(slug);
+  return slug;
+};
+
+const tocSlugSet = new Set<string>();
+const toc = Array.from(post.body.matchAll(/^(#{1,6})\s+(.+)$/gm))
+  .map((match) => ({
+    depth: match[1].length,
+    text: match[2].trim().replace(/[*_`~]/g, ''),
+    slug: slugify(match[2].trim().replace(/[*_`~]/g, ''), tocSlugSet),
+  }))
+  .filter((heading) => heading.text.length > 0);
 ---
 
 <Layout title={post.data.title} description={post.data.description ?? `${post.data.title}の感想・考察`}>
   <main class="post-page">
     <a class="back" href={baseUrl}>← トップへ戻る</a>
 
-    <article class="post">
-      <p class="meta">
-        {post.data.type ?? 'review'} • {post.data.pubDate ? new Date(post.data.pubDate).toLocaleDateString('ja-JP', { year: 'numeric', month: 'short', day: 'numeric' }) : '未設定'}
-      </p>
-      <h1>{post.data.title}</h1>
-      {post.data.description && <p class="description">{post.data.description}</p>}
-      {post.data.chat && (
-        <a class="chat-link" href={post.data.chat} target="_blank" rel="noopener noreferrer">
-          ChatGPTとの会話ログ
-        </a>
-      )}
+    <div class="post-layout">
+      <aside class="toc">
+        <h2>目次</h2>
+        <ul>
+          {toc.map((heading) => (
+            <li class={`depth-${heading.depth}`}>
+              <a href={`#${heading.slug}`}>{heading.text}</a>
+            </li>
+          ))}
+        </ul>
+      </aside>
 
-      <div class="tags">
-        {post.data.tags?.map((tag) => <span>{tag}</span>)}
-      </div>
+      <article class="post">
+        <p class="meta">
+          {post.data.type ?? 'review'} • {post.data.pubDate ? new Date(post.data.pubDate).toLocaleDateString('ja-JP', { year: 'numeric', month: 'short', day: 'numeric' }) : '未設定'}
+        </p>
+        <h1>{post.data.title}</h1>
+        {post.data.description && <p class="description">{post.data.description}</p>}
+        {post.data.chat && (
+          <a class="chat-link" href={post.data.chat} target="_blank" rel="noopener noreferrer">
+            ChatGPTとの会話ログ
+          </a>
+        )}
 
-      <div class="content">
-        <Content />
-      </div>
-    </article>
+        <div class="tags">
+          {post.data.tags?.map((tag) => <span>{tag}</span>)}
+        </div>
+
+        <div class="content">
+          <Content />
+        </div>
+      </article>
+    </div>
   </main>
+
+  <script>
+    const headings = document.querySelectorAll('.content h2, .content h3, .content h4');
+    const seen = new Set();
+
+    headings.forEach((heading) => {
+      const rawText = heading.textContent?.trim() ?? 'section';
+      const base = rawText
+        .toLowerCase()
+        .normalize('NFKD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/[^\w\s-]/g, '')
+        .trim()
+        .replace(/\s+/g, '-');
+
+      let slug = base || 'section';
+      let suffix = 2;
+      while (seen.has(slug)) {
+        slug = `${base}-${suffix}`;
+        suffix += 1;
+      }
+      seen.add(slug);
+      heading.id = slug;
+    });
+  </script>
 </Layout>
