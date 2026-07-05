@@ -1,0 +1,44 @@
+---
+import { getCollection, render } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('posts');
+
+  return posts.map((post) => ({
+    params: { slug: post.id.replace(/\.md$/, '') },
+    props: { post },
+  }));
+}
+
+const { post } = Astro.props;
+const { Content } = await render(post);
+const baseUrl = import.meta.env.BASE_URL;
+---
+
+<Layout title={post.data.title} description={post.data.description ?? `${post.data.title}の感想・考察`}>
+  <main class="post-page">
+    <a class="back" href={baseUrl}>← トップへ戻る</a>
+
+    <article class="post">
+      <p class="meta">
+        {post.data.type ?? 'review'} • {post.data.pubDate ? new Date(post.data.pubDate).toLocaleDateString('ja-JP', { year: 'numeric', month: 'short', day: 'numeric' }) : '未設定'}
+      </p>
+      <h1>{post.data.title}</h1>
+      {post.data.description && <p class="description">{post.data.description}</p>}
+      {post.data.chat && (
+        <a class="chat-link" href={post.data.chat} target="_blank" rel="noopener noreferrer">
+          ChatGPTとの会話ログ
+        </a>
+      )}
+
+      <div class="tags">
+        {post.data.tags?.map((tag) => <span>{tag}</span>)}
+      </div>
+
+      <div class="content">
+        <Content />
+      </div>
+    </article>
+  </main>
+</Layout>
