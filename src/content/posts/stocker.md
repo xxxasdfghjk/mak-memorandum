@@ -1,6 +1,6 @@
 ---
 
-title: ストッカーの中の死体と価値転換の解釈対話
+title: 「ストッカーの中の死体っていくら？」価値転換の解釈対話
 type: chat
 date: 2026-07-06
 chat: https://chatgpt.com/share/6a4a7cb0-c0b8-83e8-85ce-42a3e38b0564
