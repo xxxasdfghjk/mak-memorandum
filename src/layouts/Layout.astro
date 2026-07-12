@@ -4,6 +4,7 @@ import '../styles/global.css';
 const {
   title = '感想・考察の記録',
   description = '漫画・ゲーム・映画の感想をMarkdownで残すサイトです。',
+  pageUrl = '',
 } = Astro.props;
 const baseUrl = import.meta.env.BASE_URL;
 ---
@@ -16,6 +17,14 @@ const baseUrl = import.meta.env.BASE_URL;
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="generator" content={Astro.generator} />
     <meta name="description" content={description} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="article" />
+    <meta property="og:site_name" content="mak-memorandum" />
+    {pageUrl && <meta property="og:url" content={pageUrl} />}
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
     <title>{title}</title>
     <script is:inline>
       const storedTheme = localStorage.getItem('theme');

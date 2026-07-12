@@ -15,6 +15,14 @@ const { post } = Astro.props;
 const { Content } = await render(post);
 const baseUrl = import.meta.env.BASE_URL;
 
+const extractIchiGen = (markdown: string) => {
+  const match = markdown.match(/^#\s*一言\s*$\r?\n([\s\S]*?)(?=^\s*#|\z)/m);
+  if (!match) return null;
+  return match[1].trim().replace(/\r?\n+/g, ' ').replace(/\s+/g, ' ').trim();
+};
+
+const postDescription = extractIchiGen(post.body) ?? post.data.description ?? `${post.data.title}の感想・考察`;
+
 const slugify = (value: string, seen = new Set<string>()) => {
   const normalized = value
     .toLowerCase()
@@ -44,7 +52,7 @@ const toc = Array.from(post.body.matchAll(/^(#{1,6})\s+(.+)$/gm))
   .filter((heading) => heading.text.length > 0);
 ---
 
-<Layout title={post.data.title} description={post.data.description ?? `${post.data.title}の感想・考察`}>
+<Layout title={post.data.title} description={postDescription}>
   <main class="post-page">
     <a class="back" href={baseUrl}>← トップへ戻る</a>
 
