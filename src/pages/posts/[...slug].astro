@@ -52,7 +52,7 @@ const toc = Array.from(post.body.matchAll(/^(#{1,6})\s+(.+)$/gm))
   .filter((heading) => heading.text.length > 0);
 ---
 
-<Layout title={post.data.title} description={postDescription}>
+<Layout title={post.data.title} description={postDescription} pageUrl={Astro.url.href}>
   <main class="post-page">
     <a class="back" href={baseUrl}>← トップへ戻る</a>
 
